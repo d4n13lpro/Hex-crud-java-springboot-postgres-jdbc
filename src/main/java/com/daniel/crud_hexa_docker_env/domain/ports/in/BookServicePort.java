@@ -7,9 +7,11 @@ import java.util.Optional;
 
 public interface BookServicePort {
     Book createBook(Book book);
-    List<Book> createBooks(List<Book> books); // Nuevo método
+    List<Book> createBooks(List<Book> books);
     Optional<Book> getBookById(Long id);
     List<Book> getAllBooks();
     Book updateBook(Long id, Book book);
     void deleteBook(Long id);
+
+    boolean bookExists(String name); // Nuevo método para validar duplicados
 }

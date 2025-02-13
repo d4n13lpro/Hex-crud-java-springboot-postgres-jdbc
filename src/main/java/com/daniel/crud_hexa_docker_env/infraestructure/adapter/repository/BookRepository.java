@@ -2,79 +2,66 @@ package com.daniel.crud_hexa_docker_env.infraestructure.adapter.repository;
 
 import com.daniel.crud_hexa_docker_env.domain.model.Book;
 import com.daniel.crud_hexa_docker_env.domain.ports.out.BookRepositoryPort;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import javax.sql.DataSource;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 public class BookRepository implements BookRepositoryPort {
 
-    private final NamedParameterJdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert insertBook;
-    private static final String TABLE_NAME = "books";
+    private final JdbcTemplate jdbcTemplate;
 
-    public BookRepository(NamedParameterJdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public BookRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.insertBook = new SimpleJdbcInsert(dataSource)
-                .withTableName(TABLE_NAME)
-                .usingGeneratedKeyColumns("id");
     }
+
+    private final RowMapper<Book> bookRowMapper = (rs, rowNum) -> new Book(
+            rs.getLong("id"),
+            rs.getString("name")
+    );
 
     @Override
     public Book save(Book book) {
-        if (book.getId() == null) {
-            MapSqlParameterSource params = new MapSqlParameterSource()
-                    .addValue("name", book.getName());
-            Number newId = insertBook.executeAndReturnKey(params);
-            book.setId(newId.longValue());
-        } else {
-            String sql = "UPDATE " + TABLE_NAME + " SET name = :name WHERE id = :id";
-            MapSqlParameterSource params = new MapSqlParameterSource()
-                    .addValue("name", book.getName())
-                    .addValue("id", book.getId());
-            jdbcTemplate.update(sql, params);
-        }
+        String sql = "INSERT INTO books (name) VALUES (?) RETURNING id";
+        Long id = jdbcTemplate.queryForObject(sql, Long.class, book.getName());
+        book.setId(id);
         return book;
     }
 
     @Override
     public List<Book> saveAll(List<Book> books) {
-        return books.stream()
-                .map(this::save) // Usamos el método save para cada libro
-                .collect(Collectors.toList());
+        for (Book book : books) {
+            save(book);
+        }
+        return books;
     }
 
     @Override
     public Optional<Book> findById(Long id) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id = :id";
-        MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
-        List<Book> books = jdbcTemplate.query(sql, params, new BookRowMapper());
+        String sql = "SELECT * FROM books WHERE id = ?";
+        List<Book> books = jdbcTemplate.query(sql, bookRowMapper, id);
         return books.stream().findFirst();
     }
 
     @Override
     public List<Book> findAll() {
-        String sql = "SELECT * FROM " + TABLE_NAME;
-        return jdbcTemplate.query(sql, new BookRowMapper());
+        String sql = "SELECT * FROM books";
+        return jdbcTemplate.query(sql, bookRowMapper);
     }
 
     @Override
     public void deleteById(Long id) {
-        String sql = "DELETE FROM " + TABLE_NAME + " WHERE id = :id";
-        MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
-        jdbcTemplate.update(sql, params);
+        String sql = "DELETE FROM books WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
-    private static class BookRowMapper implements org.springframework.jdbc.core.RowMapper<Book> {
-        @Override
-        public Book mapRow(java.sql.ResultSet rs, int rowNum) throws java.sql.SQLException {
-            return new Book(rs.getLong("id"), rs.getString("name"));
-        }
+    @Override
+    public boolean existsByName(String name) {
+        String sql = "SELECT COUNT(*) FROM books WHERE name = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, name);
+        return count != null && count > 0;
     }
 }
