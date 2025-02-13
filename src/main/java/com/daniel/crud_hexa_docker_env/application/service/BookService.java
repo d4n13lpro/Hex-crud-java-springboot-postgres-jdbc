@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService implements BookServicePort {
@@ -20,6 +21,12 @@ public class BookService implements BookServicePort {
     @Override
     public Book createBook(Book book) {
         return bookRepositoryPort.save(book);
+    }
+
+    public List<Book> createBooks(List<Book> books) {
+        return books.stream()
+                .map(bookRepositoryPort::save)
+                .collect(Collectors.toList());
     }
 
     @Override

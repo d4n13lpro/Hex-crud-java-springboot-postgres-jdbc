@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface BookServicePort {
     Book createBook(Book book);
+    List<Book> createBooks(List<Book> books); // Nuevo método
     Optional<Book> getBookById(Long id);
     List<Book> getAllBooks();
     Book updateBook(Long id, Book book);

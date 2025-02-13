@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface BookRepositoryPort {
     Book save(Book book);
+    List<Book> saveAll(List<Book> books); // Nuevo método
     Optional<Book> findById(Long id);
     List<Book> findAll();
     void deleteById(Long id);

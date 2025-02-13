@@ -1,6 +1,5 @@
 package com.daniel.crud_hexa_docker_env.infraestructure.adapter.repository;
 
-import com.daniel.crud_hexa_docker_env.config.DatabaseConfig;
 import com.daniel.crud_hexa_docker_env.domain.model.Book;
 import com.daniel.crud_hexa_docker_env.domain.ports.out.BookRepositoryPort;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -11,13 +10,14 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class BookRepository implements BookRepositoryPort {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert insertBook;
-    private static final String TABLE_NAME = "books"; // Nombre fijo de la tabla
+    private static final String TABLE_NAME = "books";
 
     public BookRepository(NamedParameterJdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
@@ -41,6 +41,13 @@ public class BookRepository implements BookRepositoryPort {
             jdbcTemplate.update(sql, params);
         }
         return book;
+    }
+
+    @Override
+    public List<Book> saveAll(List<Book> books) {
+        return books.stream()
+                .map(this::save) // Usamos el método save para cada libro
+                .collect(Collectors.toList());
     }
 
     @Override
