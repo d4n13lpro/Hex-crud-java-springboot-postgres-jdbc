@@ -11,5 +11,5 @@ public interface BookRepositoryPort {
     Optional<Book> findById(Long id);
     List<Book> findAll();
     void deleteById(Long id);
-    boolean existsByName(String name); // Agregar este método
+    boolean existsByName(String name);
 }

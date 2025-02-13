@@ -6,7 +6,9 @@ import com.daniel.crud_hexa_docker_env.domain.ports.out.BookRepositoryPort;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -22,16 +24,30 @@ public class BookService implements BookServicePort {
     @Override
     public Book createBook(Book book) {
         if (bookExists(book.getName())) {
-            throw new DuplicateKeyException("El libro ya existe.");
+            throw new DuplicateKeyException("El libro '" + book.getName() + "' ya existe.");
         }
         return bookRepositoryPort.save(book);
     }
 
     @Override
-    public List<Book> createBooks(List<Book> books) {
-        return books.stream()
-                .map(this::createBook) // Aplica la validación de duplicados en cada libro
+    public Map<String, Object> createBooks(List<Book> books) {
+        List<Book> existingBooks = books.stream()
+                .filter(book -> bookRepositoryPort.existsByName(book.getName()))
                 .collect(Collectors.toList());
+
+        List<Book> booksToSave = books.stream()
+                .filter(book -> !bookRepositoryPort.existsByName(book.getName()))
+                .collect(Collectors.toList());
+
+        List<Book> savedBooks = booksToSave.stream()
+                .map(bookRepositoryPort::save)
+                .collect(Collectors.toList());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("savedBooks", savedBooks);
+        response.put("existingBooks", existingBooks);
+
+        return response;
     }
 
     @Override
