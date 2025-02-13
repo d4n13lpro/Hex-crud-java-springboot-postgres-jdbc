@@ -1,6 +1,6 @@
-package com.daniel.crud_hexa_docker.domain.ports.out;
+package com.daniel.crud_hexa_docker_env.domain.ports.out;
 
-import com.daniel.crud_hexa_docker.domain.model.Book;
+import com.daniel.crud_hexa_docker_env.domain.model.Book;
 
 import java.util.List;
 import java.util.Optional;

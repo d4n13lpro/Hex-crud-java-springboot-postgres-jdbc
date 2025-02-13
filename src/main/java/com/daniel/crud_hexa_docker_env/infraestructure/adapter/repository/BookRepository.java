@@ -1,7 +1,8 @@
-package com.daniel.crud_hexa_docker.infraestructure.adapter.repository;
+package com.daniel.crud_hexa_docker_env.infraestructure.adapter.repository;
 
-import com.daniel.crud_hexa_docker.domain.model.Book;
-import com.daniel.crud_hexa_docker.domain.ports.out.BookRepositoryPort;
+import com.daniel.crud_hexa_docker_env.config.DatabaseConfig;
+import com.daniel.crud_hexa_docker_env.domain.model.Book;
+import com.daniel.crud_hexa_docker_env.domain.ports.out.BookRepositoryPort;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -16,7 +17,7 @@ public class BookRepository implements BookRepositoryPort {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert insertBook;
-    private static final String TABLE_NAME = "books";
+    private static final String TABLE_NAME = "books"; // Nombre fijo de la tabla
 
     public BookRepository(NamedParameterJdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;

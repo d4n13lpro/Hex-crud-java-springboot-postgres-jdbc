@@ -1,4 +1,4 @@
-package com.daniel.crud_hexa_docker.domain.model;
+package com.daniel.crud_hexa_docker_env.domain.model;
 
 public class Book {
     private Long id;

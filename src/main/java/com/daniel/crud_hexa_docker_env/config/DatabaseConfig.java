@@ -1,4 +1,4 @@
-package com.daniel.crud_hexa_docker.config;
+package com.daniel.crud_hexa_docker_env.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +11,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 @Configuration
 public class DatabaseConfig {
     private final Dotenv dotenv = Dotenv.load();
+    private final String dbName = dotenv.get("DB_NAME");
 
     @Bean
     public DataSource dataSource() {
@@ -25,5 +26,9 @@ public class DatabaseConfig {
     @Bean
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {
         return new JdbcTemplate(dataSource);
+    }
+
+    public String getDbName() {
+        return dbName;
     }
 }
