@@ -1,4 +1,4 @@
-package com.daniel.crud_hexa_docker_env.infraestructure.adapter.repository;
+package com.daniel.crud_hexa_docker_env.infraestructure.adapter.driven.repository;
 
 import com.daniel.crud_hexa_docker_env.domain.model.Book;
 import com.daniel.crud_hexa_docker_env.domain.ports.out.BookRepositoryPort;

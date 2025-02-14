@@ -1,4 +1,4 @@
-package com.daniel.crud_hexa_docker_env.infraestructure.adapter.controller;
+package com.daniel.crud_hexa_docker_env.infraestructure.adapter.driving.controller;
 
 import com.daniel.crud_hexa_docker_env.application.service.BookService;
 import com.daniel.crud_hexa_docker_env.domain.model.Book;

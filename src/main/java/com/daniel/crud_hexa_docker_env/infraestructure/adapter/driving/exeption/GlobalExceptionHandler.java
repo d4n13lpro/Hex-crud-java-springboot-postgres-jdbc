@@ -1,4 +1,4 @@
-package com.daniel.crud_hexa_docker_env.infraestructure.adapter.exeption;
+package com.daniel.crud_hexa_docker_env.infraestructure.adapter.driving.exeption;
 
 
 import org.springframework.dao.DuplicateKeyException;
