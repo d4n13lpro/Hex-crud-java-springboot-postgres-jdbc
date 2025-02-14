@@ -12,6 +12,6 @@ public interface BookServicePort {
     Optional<Book> getBookById(Long id);
     List<Book> getAllBooks();
     Book updateBook(Long id, Book book);
-    void deleteBook(Long id);
+    Long deleteBook(Long id);
     boolean bookExists(String name);
 }

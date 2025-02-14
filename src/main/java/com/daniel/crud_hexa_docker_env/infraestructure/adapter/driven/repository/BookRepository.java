@@ -20,13 +20,20 @@ public class BookRepository implements BookRepositoryPort {
 
     private final RowMapper<Book> bookRowMapper = (rs, rowNum) -> new Book(
             rs.getLong("id"),
-            rs.getString("name")
+            rs.getString("name"),
+            rs.getString("author"),
+            rs.getInt("publication_year") // 🛠️ Corregido: antes decía publicationYear
     );
 
     @Override
     public Book save(Book book) {
-        String sql = "INSERT INTO books (name) VALUES (?) RETURNING id";
-        Long id = jdbcTemplate.queryForObject(sql, Long.class, book.getName());
+        String sql = "INSERT INTO books (name, author, publication_year) VALUES (?, ?, ?)";
+        jdbcTemplate.update(sql, book.getName(), book.getAuthor(), book.getPublicationYear());
+
+        // Recuperar el ID generado
+        String queryLastId = "SELECT id FROM books WHERE name = ? ORDER BY id DESC LIMIT 1";
+        Long id = jdbcTemplate.queryForObject(queryLastId, Long.class, book.getName());
+
         book.setId(id);
         return book;
     }
